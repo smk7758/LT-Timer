@@ -20,17 +20,6 @@ fun app() {
     val timerButtonText = remember { mutableStateOf(myTimer.timerButtonText_) }
     val durationText = remember { mutableStateOf(myTimer.durationText_) } // Min
 
-    val timer = Timer()
-    val task: TimerTask.() -> Unit = {
-        myTimer.duration = myTimer.duration.minusSeconds(1)
-        println("minus: ${myTimer.durationText_}")
-        if (myTimer.duration.toSeconds() <= 0) {
-            println("timer finish!")
-            myTimer.reset()
-            this.cancel()
-        }
-    }
-
     MaterialTheme {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -42,13 +31,27 @@ fun app() {
             ) {
                 Text("5分LT タイマー", fontSize = 30.sp)
                 Button(onClick = {
-                    myTimer.started = !myTimer.started
-                    timerButtonText.value = myTimer.timerButtonText_
-                    println("button: $myTimer")
+                    if (!myTimer.started) {
+                        myTimer.start()
+                    } else {
+                        myTimer.stop()
+                    }
 
-                    timer.scheduleAtFixedRate(delay = 0, period = 1000, task) // 1s
+                    timerButtonText.value = myTimer.timerButtonText_
+
+                    println("button: $myTimer")
                 }) {
                     Text(timerButtonText.value)
+                }
+//                Button(onClick = {
+//
+//                }) {
+//                    Text("Stop")
+//                }
+                Button(onClick = {
+
+                }) {
+                    Text("Reset")
                 }
             }
             Text(durationText.value)
