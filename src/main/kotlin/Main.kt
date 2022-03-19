@@ -38,10 +38,21 @@ fun app() {
         ) {
             val myTimer1 = MyTimer(1, 1)
             ltTimer(myTimer1)
-            val myTimer5 = MyTimer(5, 4)
+            val myTimer5 = MyTimer(5, 1)
             ltTimer(myTimer5)
-            val myTimer15 = MyTimer(15, 12)
+            val myTimer15 = MyTimer(15, 3)
             ltTimer(myTimer15)
+
+            Button(onClick = {
+                audio.playRing()
+            }) {
+                Text("Ring")
+            }
+            Button(onClick = {
+                audio.playRing(true)
+            }) {
+                Text("Ring Twice")
+            }
         }
     }
 }
@@ -117,11 +128,11 @@ fun ltTimer(myTimer: MyTimer) {
                 durationText.value = myTimer.durationText
 
                 openDialog.value = true // TODO
-                audio.playRing()
             }, enabled = timerResetButtonEnabled.value) {
                 Text("Reset")
             }
         }
+
         Text(durationText.value)
         Text("Now: ${LocalDateTime.now()}")
         Text(
@@ -139,46 +150,45 @@ fun ltTimer(myTimer: MyTimer) {
 @Composable
 // ref: https://techbooster.org/android/ui/18505/
 fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer) {
-    MaterialTheme {
-        Column {
-            Button(onClick = {
-                openDialog.value = true
-            }) {
-                Text("Click me")
-            }
-
-            if (openDialog.value) {
-                AlertDialog(
-                    onDismissRequest = {
-                        // Dismiss the dialog when the user clicks outside the dialog or on the back
-                        // button. If you want to disable that functionality, simply use an empty
-                        // onCloseRequest.
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                // Dismiss the dialog when the user clicks outside the dialog or on the back
+                // button. If you want to disable that functionality, simply use an empty
+                // onCloseRequest.
 //                        openDialog.value = false
-                    },
-                    title = {
-                        Text("LT-Timer")
-                    },
-                    text = {
-                        Text("${myTimer.defaultMinute}分のLT終了！")
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                openDialog.value = false
-                            }) {
-                            Text("OK")
-                        }
-                    }
-                )
+            },
+            title = {
+                Text("LT-Timer")
+            },
+            text = {
+                Text("${myTimer.defaultMinute}分のLT終了！")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        openDialog.value = false
+                    }) {
+                    Text("OK")
+                }
             }
-        }
+        )
     }
+
+//    MaterialTheme {
+//        Column {
+//            Button(onClick = {
+//                openDialog.value = true
+//            }) {
+//                Text("Click me")
+//            }
+//        }
+//    }
 }
 
 @ExperimentalMaterialApi
 fun main() = application {
     Window(onCloseRequest = {
-        audio.close()
         exitApplication()
     }) {
         app()

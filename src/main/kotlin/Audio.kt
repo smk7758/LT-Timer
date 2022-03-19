@@ -8,14 +8,11 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import javax.sound.sampled.*
 
-class Audio: Closeable, AutoCloseable {
-//ref: https://stackoverflow.com/questions/3780406/how-to-play-a-sound-alert-in-a-java-application
-//getClass().getClassLoader().getResource("sample.txt");
-//getResourceAsStream
-//val audio: Clip = createClip(Paths.get("bell.wav"))
-    val audio: Clip? = null
+class Audio {
+    val audioURL = Audio::class.java.getResource("/bell.wav")
 
     fun createClip(fileURL: URL): Clip? {
+        //ref: https://nompor.com/2017/12/14/post-128/
         try {
             AudioSystem.getAudioInputStream(fileURL).use { ais ->
                 //ファイルの形式取得
@@ -46,32 +43,18 @@ class Audio: Closeable, AutoCloseable {
     }
 
     fun playRing(twice: Boolean = false) {
-//        println("path: ${Audio::class.java.getResource("/MainKt.class")}")
-        val audioURL = Audio::class.java.getResource("/bell.wav")
-        val audioURI = audioURL?.toURI()
-
-        val audio = createClip(audioURL)
-
-//        val audioFile = File(audioURI)
-//        println("audio path URI: ${audioURI}")
-
-//        if (audioURI == null) return
-//        val audioPath = Paths.get(audioURI)
-//        println("audio path: ${audioPath.toAbsolutePath()}")
-//        val audio = createClip(audioFile.toPath())
-
+        val audio = createClip(audioURL);
+        println("play: $audioURL")
         if (audio != null) {
             audio.start()
-            if (twice) {
-                Thread.sleep(300)
-                audio.start()
-            }
         } else {
             Toolkit.getDefaultToolkit().beep() // sound
         }
-    }
 
-    override fun close() {
-        audio?.close()
+        if (twice) {
+            Thread.sleep(200)
+            playRing()
+        }
+        Thread.sleep(500)
     }
 }

@@ -3,11 +3,11 @@ import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 
-class MyTimer(val defaultMinute: Long = 5, val firstRing: Int = 4) {
+class MyTimer(val defaultMinute: Long = 5, val firstRing: Int = 1) {
     var started: Boolean = false
     var duration = Duration.ofMinutes(defaultMinute)
     val durationText: String
-        get() = String.format("%d : %02d", duration.toMinutes(), if (duration.toSeconds() >= 0) duration.toSecondsPart() else 0)
+        get() = String.format("%d : %02d ↓", duration.toMinutes(), if (duration.toSeconds() >= 0) duration.toSecondsPart() else 0)
     var endAt: LocalDateTime? = null
     val task_ = { task: TimerTask, update: () -> Unit, finished: () -> Unit ->
         duration = duration.minusSeconds(1)
