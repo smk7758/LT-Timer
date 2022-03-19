@@ -1,4 +1,5 @@
 import java.time.Duration
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 
@@ -6,17 +7,19 @@ class MyTimer(val defaultMinute: Long = 5) {
     var started: Boolean = false
     var duration = Duration.ofMinutes(defaultMinute)
     val durationText: String
-        get() = String.format("%d : %2d", duration.toMinutes(), if (duration.toSeconds() >= 0) duration.toSecondsPart() else "0")
-    val task_ = { task: TimerTask, update: () -> Unit ->
-        myTimer.duration = myTimer.duration.minusSeconds(1)
-        println("minus: ${myTimer.durationText}")
+        get() = String.format("%d : %02d", duration.toMinutes(), if (duration.toSeconds() >= 0) duration.toSecondsPart() else 0)
+    var endAt: LocalDateTime? = null
+    val task_ = { task: TimerTask, update: () -> Unit, finished: () -> Unit ->
+        duration = duration.minusSeconds(1)
+        println("minus: ${durationText}")
 
         update()
 
-        if (myTimer.duration.toSeconds() < 0) {
+        if (duration.toSeconds() < 0) {
             task.cancel()
             println("timer finish!")
-            myTimer.reset()
+            reset()
+            finished()
         }
     }
     private var timer = Timer(true)
