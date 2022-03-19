@@ -1,29 +1,27 @@
 import java.time.Duration
 import java.util.*
+import kotlin.concurrent.scheduleAtFixedRate
 
 class MyTimer(val defaultMinute: Long = 5) {
     var started: Boolean = false
-    val timerButtonText_: String
-        get() = if (!started) "Start" else "Stop"
     var duration = Duration.ofMinutes(defaultMinute)
     val durationText_: String
         get() = "${duration.toMinutes()} : ${duration.toSecondsPart()}"
-    private val timer = Timer()
-    val task: TimerTask.() -> Unit = {
+    val task_ = { task: TimerTask, update: () -> Unit ->
         myTimer.duration = myTimer.duration.minusSeconds(1)
-//        durationText.value = myTimer.durationText_
         println("minus: ${myTimer.durationText_}")
 
-        setDurationText(myTimer.durationText_)
+        update()
 
         if (myTimer.duration.toSeconds() <= 0) {
-            this.cancel()
+            task.cancel()
             println("timer finish!")
             myTimer.reset()
         }
     }
+    private var timer = Timer(true)
 
-    fun start(minute: Long = defaultMinute) {
+    fun start(task: TimerTask.() -> Unit, minute: Long = defaultMinute) {
         started = true
         duration = Duration.ofMinutes(minute)
         timer.scheduleAtFixedRate(delay = 0, period = 1000, task) // 1s
@@ -32,6 +30,7 @@ class MyTimer(val defaultMinute: Long = 5) {
     fun stop() {
         started = false
         timer.cancel()
+        timer = Timer(true)
     }
 
     fun reset(minute: Long = defaultMinute) {
@@ -40,6 +39,6 @@ class MyTimer(val defaultMinute: Long = 5) {
     }
 
     override fun toString(): String {
-        return "started: $started, text: $timerButtonText_, duration: $durationText_"
+        return "started: $started, duration: $durationText_"
     }
 }
