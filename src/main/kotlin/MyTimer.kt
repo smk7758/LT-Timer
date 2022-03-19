@@ -3,7 +3,7 @@ import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 
-class MyTimer(val defaultMinute: Long = 5) {
+class MyTimer(val defaultMinute: Long = 5, val firstRing: Int = 4) {
     var started: Boolean = false
     var duration = Duration.ofMinutes(defaultMinute)
     val durationText: String

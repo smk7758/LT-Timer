@@ -14,25 +14,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import java.awt.Toolkit
+import java.time.Duration
 import java.time.LocalDateTime
+import java.io.IOException
+import java.awt.Toolkit
+import javax.sound.sampled.*
+import java.net.MalformedURLException
+import java.net.URI
+import java.net.URL
+import java.nio.file.Path
+import java.nio.file.Paths
+
+val audio = Audio()
 
 @Composable
 @Preview
 @ExperimentalMaterialApi
 fun app() {
     MaterialTheme {
-        Column(        modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val myTimer1 = MyTimer(1)
+            val myTimer1 = MyTimer(1, 1)
             ltTimer(myTimer1)
-            val myTimer5 = MyTimer(5)
+            val myTimer5 = MyTimer(5, 4)
             ltTimer(myTimer5)
-            val myTimer15 = MyTimer(15)
+            val myTimer15 = MyTimer(15, 12)
             ltTimer(myTimer15)
         }
-//        alertDialog()
     }
 }
 
@@ -43,7 +53,7 @@ fun ltTimer(myTimer: MyTimer) {
     val timerStopButtonEnabled = remember { mutableStateOf(myTimer.started) }
     val timerResetButtonEnabled = remember { mutableStateOf(!myTimer.started) }
     val durationText = remember { mutableStateOf(myTimer.durationText) } // Min
-    val openDialog = remember { mutableStateOf(false)  }
+    val openDialog = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -63,7 +73,16 @@ fun ltTimer(myTimer: MyTimer) {
                         myTimer.task_(this, {
                             // myTimerで定義されているtaskとupdateする内容を合成する！
                             durationText.value = myTimer.durationText
+
+                            if (myTimer.duration.minus(Duration.ofMinutes(myTimer.firstRing.toLong())).isZero) {
+                                audio.playRing()
+//                                Toolkit.getDefaultToolkit().beep() // sound
+                            }
                         }, {
+                            audio.playRing(true)
+                            Toolkit.getDefaultToolkit().beep() // sound
+                            Toolkit.getDefaultToolkit().beep() // sound
+
                             openDialog.value = true
                         })
                     }
@@ -98,13 +117,20 @@ fun ltTimer(myTimer: MyTimer) {
                 durationText.value = myTimer.durationText
 
                 openDialog.value = true // TODO
+                audio.playRing()
             }, enabled = timerResetButtonEnabled.value) {
                 Text("Reset")
             }
         }
         Text(durationText.value)
         Text("Now: ${LocalDateTime.now()}")
-        Text("End at: ${if (myTimer.endAt != null) myTimer.endAt.toString() else {println("??: $myTimer.endAt"); "--"} }")
+        Text(
+            "End at: ${
+                if (myTimer.endAt != null) myTimer.endAt.toString() else {
+                    println("??: $myTimer.endAt"); "--"
+                }
+            }"
+        )
         alertDialog(openDialog, myTimer)
     }
 }
@@ -122,8 +148,6 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer) {
             }
 
             if (openDialog.value) {
-                Toolkit.getDefaultToolkit().beep()
-
                 AlertDialog(
                     onDismissRequest = {
                         // Dismiss the dialog when the user clicks outside the dialog or on the back
@@ -153,8 +177,12 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer) {
 
 @ExperimentalMaterialApi
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    Window(onCloseRequest = {
+        audio.close()
+        exitApplication()
+    }) {
         app()
     }
 }
+
 
