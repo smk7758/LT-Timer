@@ -5,15 +5,15 @@ import kotlin.concurrent.scheduleAtFixedRate
 class MyTimer(val defaultMinute: Long = 5) {
     var started: Boolean = false
     var duration = Duration.ofMinutes(defaultMinute)
-    val durationText_: String
-        get() = "${duration.toMinutes()} : ${duration.toSecondsPart()}"
+    val durationText: String
+        get() = String.format("%d : %2d", duration.toMinutes(), if (duration.toSeconds() >= 0) duration.toSecondsPart() else "0")
     val task_ = { task: TimerTask, update: () -> Unit ->
         myTimer.duration = myTimer.duration.minusSeconds(1)
-        println("minus: ${myTimer.durationText_}")
+        println("minus: ${myTimer.durationText}")
 
         update()
 
-        if (myTimer.duration.toSeconds() <= 0) {
+        if (myTimer.duration.toSeconds() < 0) {
             task.cancel()
             println("timer finish!")
             myTimer.reset()
@@ -21,9 +21,8 @@ class MyTimer(val defaultMinute: Long = 5) {
     }
     private var timer = Timer(true)
 
-    fun start(task: TimerTask.() -> Unit, minute: Long = defaultMinute) {
+    fun start(task: TimerTask.() -> Unit) {
         started = true
-        duration = Duration.ofMinutes(minute)
         timer.scheduleAtFixedRate(delay = 0, period = 1000, task) // 1s
     }
 
@@ -39,6 +38,6 @@ class MyTimer(val defaultMinute: Long = 5) {
     }
 
     override fun toString(): String {
-        return "started: $started, duration: $durationText_"
+        return "started: $started, duration: $durationText"
     }
 }

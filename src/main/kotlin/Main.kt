@@ -17,14 +17,16 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import java.time.LocalDateTime
 
-val myTimer = MyTimer(5)
+val myTimer = MyTimer(1)
 
 @Composable
 @Preview
 fun app() {
     val timerStartButtonEnabled = remember { mutableStateOf(!myTimer.started) }
     val timerStopButtonEnabled = remember { mutableStateOf(myTimer.started) }
-    val durationText = remember { mutableStateOf(myTimer.durationText_) } // Min
+    val timerResetButtonEnabled = remember { mutableStateOf(!myTimer.started) }
+    val durationText = remember { mutableStateOf(myTimer.durationText) } // Min
+    var endAt: LocalDateTime? = null
 
     MaterialTheme {
         Column(
@@ -35,21 +37,24 @@ fun app() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
-                Text("5分LT タイマー", fontSize = 30.sp)
+                Text("${myTimer.defaultMinute}分LT タイマー", fontSize = 30.sp)
 
                 // StartButton
                 Button(onClick = {
                     if (!myTimer.started) {
-                        myTimer.start({
+                        myTimer.start {
                             // task
                             myTimer.task_(this) {
                                 // myTimerで定義されているtaskとupdateする内容を合成する！
-                                durationText.value = myTimer.durationText_
+                                durationText.value = myTimer.durationText
                             }
-                        })
+                        }
                     }
                     timerStartButtonEnabled.value = false
                     timerStopButtonEnabled.value = true
+                    timerResetButtonEnabled.value = false
+                    durationText.value = myTimer.durationText
+                    endAt = LocalDateTime.now().plusSeconds(myTimer.duration.toSeconds())
 
                     println("button: $myTimer")
                 }, enabled = timerStartButtonEnabled.value) {
@@ -62,6 +67,8 @@ fun app() {
                         myTimer.stop()
                         timerStartButtonEnabled.value = true
                         timerStopButtonEnabled.value = false
+                        timerResetButtonEnabled.value = true
+                        durationText.value = myTimer.durationText
                     }
                 }, enabled = timerStopButtonEnabled.value) {
                     Text("Stop")
@@ -69,13 +76,15 @@ fun app() {
 
                 // ResetButton
                 Button(onClick = {
-
-                }) {
+                    myTimer.reset()
+                    durationText.value = myTimer.durationText
+                }, enabled = timerResetButtonEnabled.value) {
                     Text("Reset")
                 }
             }
             Text(durationText.value)
-            Text("End in: ${LocalDateTime.now()}")
+            Text("Now: ${LocalDateTime.now()}")
+            Text("End at: ${if (endAt != null) endAt.toString() else "--" }")
         }
     }
 }
