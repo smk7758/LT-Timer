@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -21,8 +20,6 @@ import androidx.compose.ui.window.application
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
-
 
 
 val audio = Audio()
@@ -44,17 +41,17 @@ fun app() {
             val myTimer15 = MyTimer(15, 3)
             ltTimer(myTimer15)
 
-            Column(modifier = Modifier.fillMaxWidth().background(Color.Gray)) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Row (Modifier.align(alignment = Alignment.End)) {
                     // Play Ring Button
-                    Button(modifier = Modifier.background(Color.Green).padding(vertical = 5.dp, horizontal = 5.dp), onClick = {
+                    Button(modifier = Modifier.padding(vertical = 5.dp, horizontal = 5.dp), onClick = {
                         audio.playRing()
                     }) {
                         Text("Ring")
                     }
 
                     // Play Ring Twice Button
-                    Button(modifier = Modifier.background(Color.Green).padding(vertical = 5.dp, horizontal = 5.dp), onClick = {
+                    Button(modifier = Modifier.padding(vertical = 5.dp, horizontal = 5.dp), onClick = {
                         audio.playRing(true)
                     }) {
                         Text("Ring Twice")
@@ -94,6 +91,12 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
 
         openDialog.value = true
     }
+    val reset = {
+        myTimer.reset()
+        durationText.value = myTimer.durationText
+
+        //                openDialog.value = true // for Debug
+    }
 
     var modifier = if (!isTop) Modifier.padding(top = 8.dp) else Modifier.padding(all = 0.dp)
     modifier = modifier.background(color = Color(240, 240, 240)).padding(all = 5.dp).fillMaxWidth()
@@ -123,6 +126,7 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
                     durationText.value = myTimer.durationText
                     myTimer.endAt = LocalDateTime.now().plusSeconds(myTimer.duration.toSeconds())
 
+                    audio.playStartSound()
                     println("button: $myTimer, endAt: $myTimer.endAt")
             }, enabled = timerStartButtonEnabled.value) {
                 Text("Start")
@@ -144,12 +148,7 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
 
             // ResetButton
             Button(modifier = Modifier.padding(horizontal = 5.dp),
-                onClick = {
-                    myTimer.reset()
-                    durationText.value = myTimer.durationText
-
-    //                openDialog.value = true
-            }, enabled = timerResetButtonEnabled.value) {
+                onClick = reset, enabled = timerResetButtonEnabled.value) {
                 Text("Reset")
             }
         }
@@ -187,7 +186,7 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () 
         Text("LT-Timer")
     },
     text = {
-        Text("%2s分のLT終了！".format(myTimer.defaultMinute.toString()), fontSize = 20.sp, modifier = Modifier.fillMaxWidth())
+        Text("%2s分のLT 終了！".format(myTimer.defaultMinute.toString()), fontSize = 20.sp, modifier = Modifier.fillMaxWidth())
     },
     confirmButton = {
         Button(
