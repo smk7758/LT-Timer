@@ -1,15 +1,12 @@
 import java.awt.Toolkit
-import java.io.Closeable
-import java.io.File
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
-import java.nio.file.Path
-import java.nio.file.Paths
 import javax.sound.sampled.*
 
 class Audio {
-    val audioURL = Audio::class.java.getResource("/bell.wav")
+    val audioBellURL = Audio::class.java.getResource("/bell.wav")
+    val audioStartSoundURL = Audio::class.java.getResource("/\"魔王魂 効果音 システム40.wav\"")
 
     fun createClip(fileURL: URL): Clip? {
         //ref: https://nompor.com/2017/12/14/post-128/
@@ -44,8 +41,8 @@ class Audio {
 
     fun playRing(twice: Boolean = false) {
         val runnable = Runnable {
-            val audio = createClip(audioURL);
-            println("play: $audioURL")
+            val audio = createClip(audioBellURL);
+            println("play: $audioBellURL")
             if (audio != null) {
                 audio.start()
             } else {
@@ -57,6 +54,26 @@ class Audio {
                 playRing()
             }
             Thread.sleep(500)
+        }
+
+        Thread(runnable).start()
+    }
+
+    fun playStartSound() {
+        playSound(audioStartSoundURL)
+    }
+
+    fun playSound(audioURL: URL, reverbMillis: Long = 500) {
+        val runnable = Runnable {
+            val audio = createClip(audioURL)
+
+            if (audio != null) {
+                audio.start()
+            } else {
+                Toolkit.getDefaultToolkit().beep() // sound
+            }
+
+            Thread.sleep(reverbMillis)
         }
 
         Thread(runnable).start()
