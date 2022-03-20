@@ -75,8 +75,8 @@ fun ltTimer(myTimer: MyTimer) {
 //        Toolkit.getDefaultToolkit().beep() // sound
 
         timerStartButtonEnabled.value = !myTimer.started
-        timerStartButtonEnabled.value = myTimer.started
-        timerStartButtonEnabled.value = !myTimer.started
+        timerStopButtonEnabled.value = myTimer.started
+        timerResetButtonEnabled.value = !myTimer.started
 
         openDialog.value = true
     }
@@ -152,12 +152,15 @@ fun ltTimer(myTimer: MyTimer) {
 // ref: https://techbooster.org/android/ui/18505/
 fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () -> Unit = {}) {
     if (openDialog.value) {
-        AlertDialog(
+        Window(state = WindowState(size = DpSize(500.dp, 700.dp)), onCloseRequest = {
+            // finish?
+        }) {
+            AlertDialog(modifier = Modifier.size(200.dp, 50.dp),
             onDismissRequest = {
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
                 // button. If you want to disable that functionality, simply use an empty
                 // onCloseRequest.
-//                        openDialog.value = false
+                        openDialog.value = false
             },
             title = {
                 Text("LT-Timer")
@@ -172,9 +175,10 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () 
                         update()
                     }) {
                     Text("OK")
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
 //    MaterialTheme {
@@ -190,7 +194,7 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () 
 
 @ExperimentalMaterialApi
 fun main() = application {
-    Window(state = WindowState(size = DpSize(500.dp, 700.dp)),onCloseRequest = {
+    Window(state = WindowState(size = DpSize(500.dp, 700.dp)), onCloseRequest = {
         exitApplication()
     }) {
         app()
