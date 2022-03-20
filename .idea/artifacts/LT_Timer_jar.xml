@@ -1,6 +1,10 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="LT-Timer:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/LT_Timer_jar</output-path>
-    <root id="archive" name="LT-Timer.jar" />
+    <root id="archive" name="LT-Timer.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/build/tmp/jar/MANIFEST.MF" />
+      </element>
+    </root>
   </artifact>
 </component>
