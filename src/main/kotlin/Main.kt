@@ -202,7 +202,7 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () 
 
 @ExperimentalMaterialApi
 fun main() = application {
-    Window(state = WindowState(size = DpSize(550.dp, 700.dp)), onCloseRequest = {
+    Window(state = WindowState(size = DpSize(550.dp, 550.dp)), onCloseRequest = {
         exitApplication()
     }) {
         app()
