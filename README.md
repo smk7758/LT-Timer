@@ -1,6 +1,12 @@
 # LT-Timer
  first try with Kotlin.
 
+<img src="images/LT-Timer-1.0.0.png" alt="LT-Timer-1.0.0" style="zoom:50%;" />
+
+<img src="images/LT-Timer-1.0.0_countdown.png" alt="LT-Timer-1.0.0" style="zoom:50%;" />
+
+<img src="images/LT-Timer-1.0.0_finish.png" alt="LT-Timer-1.0.0" style="zoom:50%;" />
+
 ## 機能
 
 1分, 5分, 15分のタイマーです。
