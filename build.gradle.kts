@@ -7,8 +7,8 @@ plugins {
     id("org.jetbrains.compose") version "1.1.1"
 }
 
-group = "me.user"
-version = "1.0"
+group = "com.github.smk7758.LTTimer"
+version = "1.0.0"
 
 repositories {
     google()
