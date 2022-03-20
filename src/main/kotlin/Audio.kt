@@ -43,18 +43,22 @@ class Audio {
     }
 
     fun playRing(twice: Boolean = false) {
-        val audio = createClip(audioURL);
-        println("play: $audioURL")
-        if (audio != null) {
-            audio.start()
-        } else {
-            Toolkit.getDefaultToolkit().beep() // sound
+        val runnable = Runnable {
+            val audio = createClip(audioURL);
+            println("play: $audioURL")
+            if (audio != null) {
+                audio.start()
+            } else {
+                Toolkit.getDefaultToolkit().beep() // sound
+            }
+
+            if (twice) {
+                Thread.sleep(200)
+                playRing()
+            }
+            Thread.sleep(500)
         }
 
-        if (twice) {
-            Thread.sleep(200)
-            playRing()
-        }
-        Thread.sleep(500)
+        Thread(runnable).start()
     }
 }
