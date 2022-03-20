@@ -21,8 +21,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
-val audio = Audio()
+private val audio = Audio()
 
 @Composable
 @Preview
@@ -42,7 +41,7 @@ fun app() {
             ltTimer(myTimer15)
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                Row (Modifier.align(alignment = Alignment.End)) {
+                Row(Modifier.align(alignment = Alignment.End)) {
                     // Play Ring Button
                     Button(modifier = Modifier.padding(vertical = 5.dp, horizontal = 5.dp), onClick = {
                         audio.playRing()
@@ -77,13 +76,13 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
 
         if (myTimer.duration.minus(Duration.ofMinutes(myTimer.firstRing.toLong())).isZero) {
             audio.playRing()
-//                                Toolkit.getDefaultToolkit().beep() // sound
+            //                                Toolkit.getDefaultToolkit().beep() // sound
         }
     }
     val onFinished = {
         audio.playRing(true)
-//        Toolkit.getDefaultToolkit().beep() // sound
-//        Toolkit.getDefaultToolkit().beep() // sound
+        //        Toolkit.getDefaultToolkit().beep() // sound
+        //        Toolkit.getDefaultToolkit().beep() // sound
 
         timerStartButtonEnabled.value = !myTimer.started
         timerStopButtonEnabled.value = myTimer.started
@@ -109,7 +108,11 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
-            Text("%2s分LT タイマー".format(myTimer.defaultMinute.toString()), fontSize = 35.sp, fontWeight = FontWeight.Medium)
+            Text(
+                "%2s分LT タイマー".format(myTimer.defaultMinute.toString()),
+                fontSize = 35.sp,
+                fontWeight = FontWeight.Medium
+            )
 
             // StartButton
             Button(modifier = Modifier.padding(horizontal = 5.dp),
@@ -128,7 +131,8 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
 
                     audio.playStartSound()
                     println("button: $myTimer, endAt: $myTimer.endAt")
-            }, enabled = timerStartButtonEnabled.value) {
+                }, enabled = timerStartButtonEnabled.value
+            ) {
                 Text("Start")
             }
 
@@ -142,26 +146,32 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
                         timerResetButtonEnabled.value = true
                         durationText.value = myTimer.durationText
                     }
-            }, enabled = timerStopButtonEnabled.value) {
+                }, enabled = timerStopButtonEnabled.value
+            ) {
                 Text("Stop")
             }
 
             // ResetButton
-            Button(modifier = Modifier.padding(horizontal = 5.dp),
-                onClick = reset, enabled = timerResetButtonEnabled.value) {
+            Button(
+                modifier = Modifier.padding(horizontal = 5.dp),
+                onClick = reset, enabled = timerResetButtonEnabled.value
+            ) {
                 Text("Reset")
             }
         }
 
-        Text(durationText.value,
+        Text(
+            durationText.value,
             fontSize = 45.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(5.dp))
+            modifier = Modifier.padding(5.dp)
+        )
 
         Column {
-//            Text("Now: ${LocalDateTime.now()}")
+            //            Text("Now: ${LocalDateTime.now()}")
             val dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-            Text("End at: ${if (myTimer.endAt != null) myTimer.endAt!!.format(dtf) else "--"}",
+            Text(
+                "End at: ${if (myTimer.endAt != null) myTimer.endAt!!.format(dtf) else "--"}",
                 fontSize = 20.sp
             )
         }
@@ -176,36 +186,42 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () 
     if (!openDialog.value) return
 
     AlertDialog(modifier = Modifier.size(200.dp, 150.dp),
-    onDismissRequest = {
-        // Dismiss the dialog when the user clicks outside the dialog or on the back
-        // button. If you want to disable that functionality, simply use an empty
-        // onCloseRequest.
-                openDialog.value = false
-    },
-    title = {
-        Text("LT-Timer")
-    },
-    text = {
-        Text("%2s分のLT 終了！".format(myTimer.defaultMinute.toString()), fontSize = 20.sp, modifier = Modifier.fillMaxWidth())
-    },
-    confirmButton = {
-        Button(
-            onClick = {
-                openDialog.value = false
-                update()
-            }) {
-            Text("OK")
+        onDismissRequest = {
+            // Dismiss the dialog when the user clicks outside the dialog or on the back
+            // button. If you want to disable that functionality, simply use an empty
+            // onCloseRequest.
+            openDialog.value = false
+        },
+        title = {
+            Text("LT-Timer")
+        },
+        text = {
+            Text(
+                "%2s分のLT 終了！".format(myTimer.defaultMinute.toString()),
+                fontSize = 20.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    openDialog.value = false
+                    update()
+                }) {
+                Text("OK")
             }
         }
     )
 }
 
 @ExperimentalMaterialApi
-fun main() = application {
-    Window(state = WindowState(size = DpSize(550.dp, 550.dp)), onCloseRequest = {
-        exitApplication()
-    }) {
-        app()
+fun main() {
+    application {
+        Window(title = "LT-Timer", state = WindowState(size = DpSize(550.dp, 550.dp)), onCloseRequest = {
+            exitApplication()
+        }) {
+            app()
+        }
     }
 }
 
