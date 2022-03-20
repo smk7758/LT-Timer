@@ -98,4 +98,4 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 src/main/resources/bell.wav
-src/main/resources/魔王魂 効果音 システム40.wav
+src/main/resources/start.wav

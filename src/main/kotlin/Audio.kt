@@ -3,12 +3,20 @@ import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
 import javax.sound.sampled.*
+import kotlin.math.log10
+
 
 class Audio {
-    val audioBellURL = Audio::class.java.getResource("/bell.wav")
-    val audioStartSoundURL = Audio::class.java.getResource("/\"魔王魂 効果音 システム40.wav\"")
+    private val audioBellURL = getAudioResource("/bell.wav")
+    private val audioStartSoundURL = getAudioResource("/start.wav")
 
-    fun createClip(fileURL: URL): Clip? {
+    private fun getAudioResource(fileName: String): URL {
+        return Audio::class.java.getResource(fileName)
+            ?:
+            error("Cannot find the file.")
+    }
+
+    private fun createClip(fileURL: URL): Clip? {
         //ref: https://nompor.com/2017/12/14/post-128/
         try {
             AudioSystem.getAudioInputStream(fileURL).use { ais ->
@@ -24,7 +32,7 @@ class Audio {
                 //再生準備完了
                 clip.open(ais)
 
-                return clip;
+                return clip
             }
         } catch (e: MalformedURLException) {
             e.printStackTrace()
@@ -39,11 +47,14 @@ class Audio {
         return null
     }
 
-    fun playRing(twice: Boolean = false) {
+    fun playRing(twice: Boolean = false, volume: Int = 100) {
         val runnable = Runnable {
-            val audio = createClip(audioBellURL);
+            val audio = createClip(audioBellURL)
             println("play: $audioBellURL")
             if (audio != null) {
+                val ctrl = audio.getControl(FloatControl.Type.MASTER_GAIN) as FloatControl
+                ctrl.value = (volume / 100).toFloat()
+
                 audio.start()
             } else {
                 Toolkit.getDefaultToolkit().beep() // sound
@@ -60,14 +71,16 @@ class Audio {
     }
 
     fun playStartSound() {
-        playSound(audioStartSoundURL)
+        playSound(audioStartSoundURL, volume = 50)
     }
 
-    fun playSound(audioURL: URL, reverbMillis: Long = 500) {
+    fun playSound(audioURL: URL, reverbMillis: Long = 500, volume: Int = 100) {
         val runnable = Runnable {
             val audio = createClip(audioURL)
 
             if (audio != null) {
+                val ctrl = audio.getControl(FloatControl.Type.MASTER_GAIN) as FloatControl
+                ctrl.value = log10((volume.toFloat() / 100).toDouble()).toFloat() * 20 // dB
                 audio.start()
             } else {
                 Toolkit.getDefaultToolkit().beep() // sound
