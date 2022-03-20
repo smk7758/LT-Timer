@@ -9,20 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import java.time.Duration
 import java.time.LocalDateTime
-import java.io.IOException
-import java.awt.Toolkit
-import javax.sound.sampled.*
-import java.net.MalformedURLException
-import java.net.URI
-import java.net.URL
-import java.nio.file.Path
-import java.nio.file.Paths
 
 val audio = Audio()
 
@@ -32,10 +26,11 @@ val audio = Audio()
 fun app() {
     MaterialTheme {
         Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier.padding(16.dp).fillMaxWidth().fillMaxHeight().fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val myTimer1 = MyTimer(1, 1)
+            myTimer1.duration = Duration.ofSeconds(1) // 1s
             ltTimer(myTimer1)
             val myTimer5 = MyTimer(5, 1)
             ltTimer(myTimer5)
@@ -195,7 +190,7 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () 
 
 @ExperimentalMaterialApi
 fun main() = application {
-    Window(onCloseRequest = {
+    Window(state = WindowState(size = DpSize(500.dp, 700.dp)),onCloseRequest = {
         exitApplication()
     }) {
         app()
