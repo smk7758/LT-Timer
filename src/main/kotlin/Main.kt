@@ -1,9 +1,6 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -11,6 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -33,7 +32,7 @@ val audio = Audio()
 fun app() {
     MaterialTheme {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val myTimer1 = MyTimer(1, 1)
@@ -43,12 +42,12 @@ fun app() {
             val myTimer15 = MyTimer(15, 3)
             ltTimer(myTimer15)
 
-            Button(onClick = {
+            Button(modifier = Modifier.paddingFromBaseline(top = 30.dp), onClick = {
                 audio.playRing()
             }) {
                 Text("Ring")
             }
-            Button(onClick = {
+            Button(modifier = Modifier.paddingFromBaseline(top = 30.dp), onClick = {
                 audio.playRing(true)
             }) {
                 Text("Ring Twice")
@@ -66,8 +65,29 @@ fun ltTimer(myTimer: MyTimer) {
     val durationText = remember { mutableStateOf(myTimer.durationText) } // Min
     val openDialog = remember { mutableStateOf(false) }
 
+    val update = {
+        // myTimerで定義されているtaskとupdateする内容を合成する！
+        durationText.value = myTimer.durationText
+
+        if (myTimer.duration.minus(Duration.ofMinutes(myTimer.firstRing.toLong())).isZero) {
+            audio.playRing()
+//                                Toolkit.getDefaultToolkit().beep() // sound
+        }
+    }
+    val onFinished = {
+        audio.playRing(true)
+//        Toolkit.getDefaultToolkit().beep() // sound
+//        Toolkit.getDefaultToolkit().beep() // sound
+
+        timerStartButtonEnabled.value = !myTimer.started
+        timerStartButtonEnabled.value = myTimer.started
+        timerStartButtonEnabled.value = !myTimer.started
+
+        openDialog.value = true
+    }
+
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.paddingFromBaseline(top = 50.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -75,27 +95,12 @@ fun ltTimer(myTimer: MyTimer) {
             horizontalArrangement = Arrangement.End
         ) {
             Text("${myTimer.defaultMinute}分LT タイマー", fontSize = 30.sp)
-
             // StartButton
             Button(onClick = {
                 if (!myTimer.started) {
                     myTimer.start {
                         // task
-                        myTimer.task_(this, {
-                            // myTimerで定義されているtaskとupdateする内容を合成する！
-                            durationText.value = myTimer.durationText
-
-                            if (myTimer.duration.minus(Duration.ofMinutes(myTimer.firstRing.toLong())).isZero) {
-                                audio.playRing()
-//                                Toolkit.getDefaultToolkit().beep() // sound
-                            }
-                        }, {
-                            audio.playRing(true)
-                            Toolkit.getDefaultToolkit().beep() // sound
-                            Toolkit.getDefaultToolkit().beep() // sound
-
-                            openDialog.value = true
-                        })
+                        myTimer.task_(this, update, onFinished)
                     }
                 }
                 timerStartButtonEnabled.value = false
@@ -121,35 +126,36 @@ fun ltTimer(myTimer: MyTimer) {
             }, enabled = timerStopButtonEnabled.value) {
                 Text("Stop")
             }
-
-            // ResetButton
+                        // ResetButton
             Button(onClick = {
                 myTimer.reset()
                 durationText.value = myTimer.durationText
 
-                openDialog.value = true // TODO
+//                openDialog.value = true
             }, enabled = timerResetButtonEnabled.value) {
                 Text("Reset")
             }
         }
 
-        Text(durationText.value)
-        Text("Now: ${LocalDateTime.now()}")
-        Text(
-            "End at: ${
-                if (myTimer.endAt != null) myTimer.endAt.toString() else {
-                    println("??: $myTimer.endAt"); "--"
-                }
-            }"
-        )
-        alertDialog(openDialog, myTimer)
+        Text(durationText.value, fontSize = 45.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(5.dp))
+        Column {
+            Text("Now: ${LocalDateTime.now()}")
+            Text(
+                "End at: ${
+                    if (myTimer.endAt != null) myTimer.endAt.toString() else {
+                        println("??: $myTimer.endAt"); "--"
+                    }
+                }"
+            )
+        }
+        alertDialog(openDialog, myTimer, update)
     }
 }
 
 @ExperimentalMaterialApi
 @Composable
 // ref: https://techbooster.org/android/ui/18505/
-fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer) {
+fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () -> Unit = {}) {
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = {
@@ -168,6 +174,7 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer) {
                 Button(
                     onClick = {
                         openDialog.value = false
+                        update()
                     }) {
                     Text("OK")
                 }
