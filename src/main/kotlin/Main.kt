@@ -44,15 +44,22 @@ fun app() {
             val myTimer15 = MyTimer(15, 3)
             ltTimer(myTimer15)
 
-            Button(modifier = Modifier.paddingFromBaseline(top = 30.dp), onClick = {
-                audio.playRing()
-            }) {
-                Text("Ring")
-            }
-            Button(modifier = Modifier.paddingFromBaseline(top = 30.dp), onClick = {
-                audio.playRing(true)
-            }) {
-                Text("Ring Twice")
+            Column(modifier = Modifier.fillMaxWidth().background(Color.Gray)) {
+                Row (Modifier.align(alignment = Alignment.End)) {
+                    // Play Ring Button
+                    Button(modifier = Modifier.background(Color.Green).padding(vertical = 5.dp, horizontal = 5.dp), onClick = {
+                        audio.playRing()
+                    }) {
+                        Text("Ring")
+                    }
+
+                    // Play Ring Twice Button
+                    Button(modifier = Modifier.background(Color.Green).padding(vertical = 5.dp, horizontal = 5.dp), onClick = {
+                        audio.playRing(true)
+                    }) {
+                        Text("Ring Twice")
+                    }
+                }
             }
         }
     }
