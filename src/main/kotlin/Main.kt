@@ -37,6 +37,8 @@ fun app() {
             ltTimer(myTimer1, true)
             val myTimer5 = MyTimer(5, 1)
             ltTimer(myTimer5)
+            val myTimer7 = MyTimer(7, 2)
+            ltTimer(myTimer7)
             val myTimer15 = MyTimer(15, 3)
             ltTimer(myTimer15)
 
@@ -93,7 +95,7 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
     val reset = {
         myTimer.reset()
         durationText.value = myTimer.durationText
-
+        myTimer.endAt = null // Text will change, too.
         //                openDialog.value = true // for Debug
     }
 
