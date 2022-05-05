@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.smk7758.LTTimer"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     google()
@@ -58,7 +58,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "LT-Timer"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
 //            outputBaseDir.set(project.buildDir.resolve("output")) // defaullt: "compose/binaries"
         }
     }
