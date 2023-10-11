@@ -2,18 +2,22 @@ import java.awt.Toolkit
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
+import java.nio.file.Paths
 import javax.sound.sampled.*
 import kotlin.math.log10
 
 
 class Audio {
-    private val audioBellURL = getAudioResource("/bell.wav")
-    private val audioStartSoundURL = getAudioResource("/start.wav")
+//    private val audioBellURL = getAudioResource("/bell.wav")
+//    private val audioStartSoundURL = getAudioResource("/start.wav")
+private val audioBellURL = Paths.get("C:/Programming/InteliJ/LT-Timer/src/main/kotlin/resouces/bell.wav").toUri().toURL()
+private val audioStartSoundURL = Paths.get("C:/Programming/InteliJ/LT-Timer/src/main/kotlin/resouces/start.wav").toUri().toURL()
 
     private fun getAudioResource(fileName: String): URL {
+        println(Audio::class.java.getResource("")?.path.toString())
+
         return Audio::class.java.getResource(fileName)
-            ?:
-            error("Cannot find the file.")
+            ?:  error("Cannot find the file. $fileName")
     }
 
     private fun createClip(fileURL: URL): Clip? {

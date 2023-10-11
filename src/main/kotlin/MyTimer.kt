@@ -3,8 +3,12 @@ import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 
-class MyTimer(val defaultMinute: Long = 5, val firstRing: Int = 1) {
+class MyTimer(val defaultMinute: Long = 5, val firstRing: Int = 1, val afterRing: Int = 2) {
     var started: Boolean = false
+
+    /**
+     * 残り時間
+     */
     var duration = Duration.ofMinutes(defaultMinute)!!
     val durationText: String
         get() = String.format("%d : %02d", duration.toMinutes(), if (duration.toSeconds() >= 0) duration.toSecondsPart() else 0)

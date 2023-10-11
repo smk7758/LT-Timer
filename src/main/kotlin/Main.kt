@@ -32,15 +32,19 @@ fun app() {
             modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().fillMaxHeight().fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val myTimer5 = MyTimer(5, 1)
+            ltTimer(myTimer5, isTop = true)
+//            val myTimer7 = MyTimer(7, 2)
+//            ltTimer(myTimer7)
+            val myTimer10 = MyTimer(10, 2)
+            ltTimer(myTimer10)
+//            val myTimer15 = MyTimer(15, 3)
+//            ltTimer(myTimer15)
+            val myTimer2 = MyTimer(2, 2)
+            ltTimer(myTimer2)
             val myTimer1 = MyTimer(1, 1)
             myTimer1.duration = Duration.ofSeconds(1) // 1s
-            ltTimer(myTimer1, true)
-            val myTimer5 = MyTimer(5, 1)
-            ltTimer(myTimer5)
-            val myTimer7 = MyTimer(7, 2)
-            ltTimer(myTimer7)
-            val myTimer15 = MyTimer(15, 3)
-            ltTimer(myTimer15)
+            ltTimer(myTimer1)
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(Modifier.align(alignment = Alignment.End)) {
@@ -91,6 +95,10 @@ fun ltTimer(myTimer: MyTimer, isTop: Boolean = false) {
         timerResetButtonEnabled.value = !myTimer.started
 
         openDialog.value = true
+    }
+    val onAfterFinishedRing = {
+        audio.playRing(true)
+        audio.playRing(true)
     }
     val reset = {
         myTimer.reset()
@@ -219,7 +227,7 @@ fun alertDialog(openDialog: MutableState<Boolean>, myTimer: MyTimer, update: () 
 @ExperimentalMaterialApi
 fun main() {
     application {
-        Window(title = "LT-Timer", state = WindowState(size = DpSize(550.dp, 550.dp)), onCloseRequest = {
+        Window(title = "LT-Timer", state = WindowState(size = DpSize(550.dp, 850.dp)), onCloseRequest = {
             exitApplication()
         }) {
             app()
